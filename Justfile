@@ -4,10 +4,11 @@ PHP_EXEC := if os() == "macos" { "$(brew --prefix php@8.0)/bin/php" } else { "ph
 CP_PATH := "ClassicPress-release"
 CP_URL := "https://www.classicpress.net/latest.zip"
 WP_LANG_URL := "https://translate.wordpress.org/projects/wp/dev/he/default/export-translations/"
+CONTAINER_NAME := "cp-${THEME_ID}-db"
 
 setup-database:
     docker create \
-        --name cp-$THEME_ID-db                  \
+        --name cp-$THEME_ID-db             \
         -e MARIADB_USER=cp                 \
         -e MARIADB_PASSWORD=hihihihi       \
         -e MARIADB_RANDOM_ROOT_PASSWORD=1  \
@@ -28,4 +29,5 @@ download-classicpress:
     wget "{{WP_LANG_URL}}?format=mo" -O "{{CP_PATH}}/wp-content/languages/wp-dev-he.mo"
 
 watch:
+    docker start {{CONTAINER_NAME}}
     cd {{CP_PATH}} && {{PHP_EXEC}} -S localhost:51690
