@@ -4,18 +4,19 @@ PHP_EXEC := if os() == "macos" { "$(brew --prefix php@8.0)/bin/php" } else { "ph
 CP_PATH := "ClassicPress-release"
 CP_URL := "https://www.classicpress.net/latest.zip"
 WP_LANG_URL := "https://translate.wordpress.org/projects/wp/dev/he/default/export-translations/"
-CONTAINER_NAME := "cp-${THEME_ID}-db"
+CONTAINER_NAME := "classicpress-shared-db"
 
-setup-database:
+# create the shared MariaDB instance if doesn't already exist
+create-database:
+    docker ps --filter name=classicpress-shared-db --quiet || \
     docker create \
-        --name cp-$THEME_ID-db             \
+        --name {{CONTAINER_NAME}}          \
         -e MARIADB_USER=cp                 \
         -e MARIADB_PASSWORD=hihihihi       \
         -e MARIADB_RANDOM_ROOT_PASSWORD=1  \
         -e MARIADB_DATABASE=classicpress   \
         -p "3306:3306"                     \
         mariadb
-    docker start cp-$THEME_ID-db
 
 download-classicpress:
     wget {{CP_URL}} -O cp.zip
